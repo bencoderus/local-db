@@ -18,15 +18,15 @@ export class LocalStorageDriver implements DatabaseDriver {
   protected tableData: Record<string, any> = {};
   protected storage: LocalStorage;
 
-  constructor(protected readonly options: ConnectionOption) {
+  public constructor(protected readonly options: ConnectionOption) {
     this.storage = new LocalStorage(options.localStorage);
   }
 
-  getTableKey(tableName: string) {
+  public getTableKey(tableName: string) {
     return `${TABLE_PREFIX}_${tableName}`;
   }
 
-  createTable(
+  public createTable(
     tableName: string,
     schema: Record<string, FieldType>,
     configuration: TableConfigurationRecord | null = null
@@ -37,7 +37,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     this.storage.put(this.getTableKey(tableName), []);
   }
 
-  saveSchema(tableSchema: string, schema: Record<string, FieldType>) {
+  private saveSchema(tableSchema: string, schema: Record<string, FieldType>) {
     const key = `${TABLE_PREFIX}_table_schema`;
     const existing = this.storage.get(key) ?? {};
 
@@ -46,7 +46,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     this.storage.put(key, existing);
   }
 
-  saveConfiguration(
+  private saveConfiguration(
     tableSchema: string,
     configuration: TableConfigurationRecord | null
   ) {
@@ -58,7 +58,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     this.storage.put(key, existing);
   }
 
-  getTableConfiguration(tableName: string): TableConfigurationRecord {
+  public getTableConfiguration(tableName: string): TableConfigurationRecord {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -66,11 +66,11 @@ export class LocalStorageDriver implements DatabaseDriver {
     return this.storage.get(TABLE_CONFIGURATION_KEY);
   }
 
-  tableExists(tableName: string): boolean {
+  public tableExists(tableName: string): boolean {
     return this.storage.exists(this.getTableKey(tableName));
   }
 
-  getTableSchema(tableName: string): Record<string, any> {
+  public getTableSchema(tableName: string): Record<string, any> {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -78,7 +78,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     return this.storage.get(TABLE_SCHEMA_KEY);
   }
 
-  getTableData(tableName: string): Array<Record<string, any>> {
+  public getTableData(tableName: string): Array<Record<string, any>> {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -86,7 +86,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     return this.storage.get(this.getTableKey(tableName));
   }
 
-  deleteData(tableName: string, _id: string) {
+  public deleteData(tableName: string, _id: string) {
     const data = this.getTableData(tableName);
     const index = this.findIndex(_id, data);
 
@@ -95,7 +95,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     this.storage.put(this.getTableKey(tableName), data);
   }
 
-  findIndex(_id: string, data: Array<Record<string, any>>): number {
+  public findIndex(_id: string, data: Array<Record<string, any>>): number {
     const index = data.findIndex((record) => record._id === _id);
 
     if (!index) {
@@ -105,7 +105,7 @@ export class LocalStorageDriver implements DatabaseDriver {
     return index;
   }
 
-  insertData(tableName: string, data: Record<string, any>) {
+  public insertData(tableName: string, data: Record<string, any>) {
     const store = this.getTableData(tableName);
 
     store.push(data);
@@ -115,7 +115,11 @@ export class LocalStorageDriver implements DatabaseDriver {
     return data;
   }
 
-  update(tableName: string, _id: string, updateData: Record<string, any>) {
+  public update(
+    tableName: string,
+    _id: string,
+    updateData: Record<string, any>
+  ) {
     const data = this.getTableData(tableName);
 
     const index = this.findIndex(_id, data);

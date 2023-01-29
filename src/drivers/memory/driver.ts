@@ -13,11 +13,11 @@ export class MemoryDriver implements DatabaseDriver {
   protected tableConfiguration: TableConfiguration = {};
   protected tableData: Record<string, any> = {};
 
-  constructor(option: ConnectionOption) {
+  public constructor(option: ConnectionOption) {
     this.connectionOption = option;
   }
 
-  createTable(
+  public createTable(
     tableName: string,
     schema: Record<string, FieldType>,
     configuration: TableConfigurationRecord | null = null
@@ -29,7 +29,7 @@ export class MemoryDriver implements DatabaseDriver {
       : DEFAULT_TABLE_CONFIG;
   }
 
-  getTableConfiguration(tableName: string): TableConfigurationRecord {
+  public getTableConfiguration(tableName: string): TableConfigurationRecord {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -37,11 +37,11 @@ export class MemoryDriver implements DatabaseDriver {
     return this.tableConfiguration[tableName];
   }
 
-  tableExists(tableName: string): boolean {
+  public tableExists(tableName: string): boolean {
     return !!this.tableSchema[tableName];
   }
 
-  getTableSchema(tableName: string): Record<string, any> {
+  public getTableSchema(tableName: string): Record<string, any> {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -49,7 +49,7 @@ export class MemoryDriver implements DatabaseDriver {
     return this.tableSchema[tableName];
   }
 
-  getTableData(tableName: string): Array<Record<string, any>> {
+  public getTableData(tableName: string): Array<Record<string, any>> {
     if (!this.tableExists(tableName)) {
       throw new Error("Create table first");
     }
@@ -57,14 +57,14 @@ export class MemoryDriver implements DatabaseDriver {
     return this.tableData[tableName];
   }
 
-  deleteData(tableName: string, _id: string) {
+  public deleteData(tableName: string, _id: string) {
     const data = this.getTableData(tableName);
     const index = this.findIndex(_id, data);
 
     data.splice(index, 1);
   }
 
-  findIndex(_id: string, data: Array<Record<string, any>>): number {
+  public findIndex(_id: string, data: Array<Record<string, any>>): number {
     const index = data.findIndex((record) => record._id === _id);
 
     if (!index) {
@@ -74,7 +74,7 @@ export class MemoryDriver implements DatabaseDriver {
     return index;
   }
 
-  insertData(tableName: string, data: Record<string, any>) {
+  public insertData(tableName: string, data: Record<string, any>) {
     const store = this.getTableData(tableName);
 
     store.push(data);
@@ -82,7 +82,11 @@ export class MemoryDriver implements DatabaseDriver {
     return data;
   }
 
-  update(tableName: string, _id: string, updateData: Record<string, any>) {
+  public update(
+    tableName: string,
+    _id: string,
+    updateData: Record<string, any>
+  ) {
     const data = this.getTableData(tableName);
 
     const index = this.findIndex(_id, data);

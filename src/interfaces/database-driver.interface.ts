@@ -1,9 +1,4 @@
-import {
-  ConnectionOption,
-  FieldType,
-  TableConfiguration,
-  TableConfigurationRecord,
-} from "../types/database.type";
+import { FieldType, TableConfigurationRecord } from "../types/database.type";
 
 export interface DatabaseDriver {
   createTable(
